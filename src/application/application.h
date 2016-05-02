@@ -7,10 +7,12 @@
 #include <Urho3D/Scene/Node.h>
 #include <Urho3D/Input/Input.h>
 #include <Urho3D/Graphics/Graphics.h>
+#include <Urho3D/Graphics/Renderer.h>
 #include <Urho3D/Engine/Engine.h>
 
 namespace gengine
 {
+namespace gui { class System; }
 namespace application
 {
 
@@ -39,6 +41,7 @@ public:
     inline Urho3D::ResourceCache & getResourceCache() { return *GetSubsystem<Urho3D::ResourceCache>(); }
     inline Urho3D::Input & getInput() { return *GetSubsystem<Urho3D::Input>(); }
     inline Urho3D::Graphics & getGraphics() { return *GetSubsystem<Urho3D::Graphics>(); }
+    inline Urho3D::Renderer & getRenderer() { return *GetSubsystem<Urho3D::Renderer>(); }
 
     inline float getTimeStep() { return engine_->GetNextTimeStep(); };
     inline bool isRunning() { return engine_ && !engine_->IsExiting(); }
@@ -46,17 +49,23 @@ public:
     Urho3D::Scene & getScene() { return *scene; }
     Urho3D::Node & createNode();
 
+    gui::System & getGui();
+
+    const Urho3D::IntVector2 & getWindowSize() const { return windowSize; }
     void setWindowSize(const Urho3D::IntVector2 & size) { windowSize = size; }
     void setWindowTitle(const Urho3D::String & title) { windowTitle = title; }
-
-    static App & getInstance() { return * instance; }
+    const Urho3D::String & getGuiFilename() { return guiFilename; }
+    void setGuiFilename(const Urho3D::String & filename) { guiFilename = filename; }
 
     void update(Urho3D::StringHash eventType, Urho3D::VariantMap& eventData);
+
+    static App & getInstance() { return * instance; }
 
 private:
 
     Urho3D::String
-        windowTitle;
+        windowTitle,
+        guiFilename;
     bool
         fullscreen;
     Urho3D::IntVector2
@@ -71,6 +80,13 @@ inline App & get()
 {
     return App::getInstance();
 }
+
+void loadScriptFile(const char *filename, const char *additional_code = "");
+
+#if CEF
+    void preInit();
+    void init();
+#endif
 
 }
 }

@@ -2,13 +2,13 @@ package gengine.components;
 
 import gengine.math.*;
 
-class AnimatedSprite2D
+class AnimatedSprite2D extends UrhoComponent
 {
-    public var object:Dynamic;
-
     public function new(?animationSet, ?animation, ?loopMode=0)
     {
-        untyped __js__("this.object = new Module.AnimatedSprite2D(gengineApp.getContext())");
+        super();
+
+        untyped __js__("this.object = new Module.AnimatedSprite2D(gengine.getContext())");
         untyped __js__("window.dummyNode.addComponent(this.object, 0, 0);");
 
         if(animationSet != null)
@@ -27,7 +27,6 @@ class AnimatedSprite2D
         untyped __js__("this.object.setAnimationSet(animationSet)");
     }
 
-
     public function setAnimation(name:String, ?loopMode=0)
     {
         untyped __js__("this.object.setAnimation(name, loopMode)");
@@ -41,5 +40,20 @@ class AnimatedSprite2D
     public function getLayer():Int
     {
         return untyped __js__("this.object.getLayer()");
+    }
+
+    public function setEntity(entityName:String)
+    {
+        untyped __js__("this.object.setEntity(entityName)");
+    }
+
+    public function setLoopMode(loopMode:Int)
+    {
+        untyped __js__("this.object.setLoopMode(loopMode)");
+    }
+
+    public function setSpeed(speed:Float)
+    {
+        untyped __js__("this.object.setSpeed(speed)");
     }
 }

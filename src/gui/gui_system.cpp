@@ -1,7 +1,7 @@
-
 #include "gui_system.h"
 #include "gui_cef_app.h"
 #include "embindcefv8.h"
+#include "application.h"
 
 #include <sstream>
 
@@ -19,6 +19,8 @@
     #include <emscripten/bind.h>
 
     using namespace emscripten;
+#else
+    using namespace Urho3D;
 #endif
 
 namespace gengine
@@ -62,7 +64,6 @@ void System::init(int argc, char *argv[])
         CefRefPtr<App> app(new App);
 
         handler = new Handler();
-        handler->init();
 
         CefSettings settings;
         memset(&settings, 0, sizeof(CefSettings));
@@ -96,31 +97,35 @@ void System::update()
     #ifndef EMSCRIPTEN
     {
         {
-            /*CefMouseEvent mouse_event;
-            const input::System & input = input::System::getInstance();
+            static bool mouseWasDown = false;
+
+            CefMouseEvent mouse_event;
+            const auto & input = gengine::application::get().getInput();
             int wheelY;
 
-            mouse_event.x = input.getMousePosition().x_;
-            mouse_event.y = input.getMousePosition().y_;
+            mouse_event.x = input.GetMousePosition().x_;
+            mouse_event.y = input.GetMousePosition().y_;
 
-            if(input.isMouseButtonJustDown(1))
+            if(input.GetMouseButtonDown(1) && !mouseWasDown)
             {
                 browser->GetHost()->SendMouseClickEvent(mouse_event, MBT_LEFT, false, 1);
+                mouseWasDown = true;
             }
 
-            if(input.isMouseButtonUp(1))
+            if(!input.GetMouseButtonDown(1) && mouseWasDown)
             {
                 browser->GetHost()->SendMouseClickEvent(mouse_event, MBT_LEFT, true, 1);
+                mouseWasDown = false;
             }
 
-            wheelY = mouse.getWheelY();
+            wheelY = input.GetMouseMoveWheel();
 
             if(wheelY != 0)
             {
                 browser->GetHost()->SendMouseWheelEvent(mouse_event, 0, wheelY * 32);
             }
 
-            browser->GetHost()->SendMouseMoveEvent(mouse_event, false);*/
+            browser->GetHost()->SendMouseMoveEvent(mouse_event, false);
         }
 
         CefDoMessageLoopWork();
@@ -205,19 +210,6 @@ void System::showPage(const char *name, const char *effect, const int duration)
 
     executeScript(js_code.c_str());
 }
-
-#ifdef EMSCRIPTEN
-    EMSCRIPTEN_BINDINGS(gengine_gui)
-    {
-        void (* gengine_gui_showpage )(std::string, std::string, float) = []
-            (std::string page_name, std::string effect, float duration)
-            {
-                gengine::gui::System::getInstance().showPage(page_name.c_str(), effect.c_str(), duration);
-            };
-
-        function<void, std::string, std::string, float>("gengine_gui_showpage", gengine_gui_showpage );
-    }
-#endif
 
 }
 }

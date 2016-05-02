@@ -10,6 +10,7 @@
 using namespace Urho3D;
 
 EMBINDCEFV8_DECLARE_ENUM(CreateMode);
+EMBINDCEFV8_DECLARE_ENUM(TransformSpace);
 EMBINDCEFV8_DECLARE_CLASS(Scene);
 EMBINDCEFV8_DECLARE_CLASS(Node);
 EMBINDCEFV8_DECLARE_CLASS(Context);
@@ -38,12 +39,17 @@ EMBINDCEFV8_BINDINGS(scene)
         .method("getUp", &Node::GetUp)
         .method("getScale", &Node::GetScale)
         .method("getRotation2D", &Node::GetRotation2D)
+        .method("getParent", &Node::GetParent)
         .method("createChild", static_cast<Node* (Node::*)(unsigned, CreateMode)>(&Node::CreateChild))
         .method("addChild", &Node::AddChild)
         .method("removeChild", static_cast<void (Node::*)(Node*)>(&Node::RemoveChild))
         .method("removeAllChildren", &Node::RemoveAllChildren)
         .method("addComponent", &Node::AddComponent)
         .method("removeComponent", static_cast<void (Node::*)(Component*)>(&Node::RemoveComponent))
+        .method("roll", &Node::Roll)
+        .method("yaw", &Node::Yaw)
+        .method("pitch", &Node::Pitch)
+        .method("lookAt", &Node::LookAt)
         ;
 
     embindcefv8::Class<Scene>("Scene")

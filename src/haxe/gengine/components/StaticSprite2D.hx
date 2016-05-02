@@ -2,13 +2,13 @@ package gengine.components;
 
 import gengine.math.*;
 
-class StaticSprite2D
+class StaticSprite2D extends UrhoComponent
 {
-    public var object:Dynamic;
-
-    public function new(?sprite)
+    public inline function new(?sprite)
     {
-        untyped __js__("this.object = new Module.StaticSprite2D(gengineApp.getContext())");
+        super();
+
+        untyped __js__("this.object = new Module.StaticSprite2D(gengine.getContext())");
         untyped __js__("window.dummyNode.addComponent(this.object, 0, 0);");
 
         if(sprite != null)
@@ -17,42 +17,42 @@ class StaticSprite2D
         }
     }
 
-    public function setSprite(sprite:Dynamic)
+    public inline function setSprite(sprite:Dynamic)
     {
         untyped __js__("this.object.setSprite(sprite)");
     }
 
-    public function setDrawRect(rect:Rect)
+    public inline function setDrawRect(rect:Rect)
     {
         untyped __js__("this.object.setDrawRect(rect)");
     }
 
-    public function setTextureRect(rect:Rect)
+    public inline function setTextureRect(rect:Rect)
     {
         untyped __js__("this.object.setTextureRect(rect)");
     }
 
-    public function setLayer(layer:Int)
+    public inline function setLayer(layer:Int)
     {
         untyped __js__("this.object.setLayer(layer)");
     }
 
-    public function getLayer():Int
+    public inline function getLayer():Int
     {
         return untyped __js__("this.object.getLayer()");
     }
 
-    public function setHotSpot(hotSpot:Vector2)
+    public inline function setHotSpot(hotSpot:Vector2)
     {
         untyped __js__("this.object.setHotSpot(hotSpot)");
     }
 
-    public function setUseHotSpot(useHotSpot:Bool)
+    public inline function setUseHotSpot(useHotSpot:Bool)
     {
         untyped __js__("this.object.setUseHotSpot(useHotSpot)");
     }
 
-    public function setColor(color:Color)
+    public inline function setColor(color:Color)
     {
         untyped __js__("this.object.setColor(color)");
     }

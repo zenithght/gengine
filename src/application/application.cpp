@@ -36,6 +36,7 @@ App::App()
     :
     Application(new Context()),
     windowTitle("gengine application"),
+    guiFilename("about:blank"),
     fullscreen(false),
     windowSize(640, 480)
 {
@@ -107,12 +108,21 @@ void App::start()
     Thread::SetMainThread();
 
     Start();
+
+    #ifdef CEF
+        gui::System::getInstance().getHandler().init();
+        gui::System::getInstance().loadFile(gengine::application::get().getGuiFilename().CString());
+    #endif
 }
 
 void App::runFrame()
 {
     Thread::SetMainThread();
     engine_->RunFrame();
+
+    #ifdef CEF
+        gengine::gui::System::getInstance().getHandler().updateTexture();
+    #endif
 }
 
 void App::stop()
@@ -123,6 +133,11 @@ void App::stop()
 void App::exit()
 {
     engine_->Exit();
+}
+
+gui::System & App::getGui()
+{
+    return gui::System::getInstance();
 }
 
 Node & App::createNode()
@@ -141,25 +156,36 @@ void App::update(StringHash eventType, VariantMap& eventData)
 SharedPtr<App>
     App::instance;
 
+#if CEF
+    void loadScriptFile(const char *filename, const char *additional_code)
+    {
+        std::ifstream in(filename);
+        std::string contents((std::istreambuf_iterator<char>(in)),
+        std::istreambuf_iterator<char>());
+
+        contents += additional_code;
+
+        embindcefv8::executeJavaScript(contents.c_str());
+    }
+
+    void preInit()
+    {
+        const char js_code[] =
+            #include "application_preinit.js"
+
+        loadScriptFile("generated/main.js", js_code);
+    }
+
+    void init()
+    {
+        const char js_code[] =
+            #include "application_init.js"
+
+        loadScriptFile("generated/main.js", js_code);
+    }
+#endif
+
 }
-}
-
-void loadScriptFile(const char *filename)
-{
-    std::ifstream in(filename);
-    std::string contents((std::istreambuf_iterator<char>(in)),
-    std::istreambuf_iterator<char>());
-
-    #ifdef CEF
-        const char application_js[] =
-            #include "application.js"
-
-        contents += application_js;
-    #else
-        contents += " gengineApp = Module.gengineApp;";
-    #endif
-
-    embindcefv8::executeJavaScript(contents.c_str());
 }
 
 gengine::application::App
@@ -174,13 +200,12 @@ int main(int argc, char *argv[])
 
     mainApp = new gengine::application::App();
 
-    embindcefv8::addGlobalObject(*mainApp, "gengineApp");
+    embindcefv8::addGlobalObject(*mainApp, "gengine");
 
     gengine::gui::System::getInstance().init(argc, argv);
 
-    loadScriptFile("generated/main.js");
-
     #ifdef EMSCRIPTEN
+        gengine::application::loadScriptFile("generated/main.js", " gengine = Module.gengine;");
         embindcefv8::executeJavaScript("Main.init();");
         mainApp->run();
     #else

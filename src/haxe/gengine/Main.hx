@@ -1,9 +1,9 @@
 package gengine;
 
-import ash.core.Engine;
-import ash.core.*;
 import gengine.systems.*;
+import gengine.*;
 
+@:dox(hide)
 class Main
 {
     private static var engine:Engine;
@@ -22,10 +22,10 @@ class Main
     {
         engine = new Engine();
 
-        engine.addSystem(new TransformSystem(), 0);
-        engine.addSystem(new RenderSystem(), 1);
+        engine.entityAdded.add(onEntityAdded);
+        engine.entityRemoved.add(onEntityRemoved);
 
-        untyped __js__("window.dummyNode = gengineApp.getScene().createChild(0, 0);");
+        untyped __js__("window.dummyNode = gengine.getScene().createChild(0, 0);");
         untyped __js__("window.dummyNode.setEnabled(false)");
 
         Application.start(engine);
@@ -34,5 +34,19 @@ class Main
     static public function update(dt:Float)
     {
         engine.update(dt);
+    }
+
+    static public function onEntityAdded(entity:ash.core.Entity):Void
+    {
+        var scene = Gengine.getScene();
+
+        untyped __js__("scene.addChild(entity.node, 1000)");
+    }
+
+    static public function onEntityRemoved(entity:ash.core.Entity):Void
+    {
+        var scene = Gengine.getScene();
+
+        untyped __js__("scene.removeChild(entity.node)");
     }
 }
