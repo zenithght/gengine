@@ -12,11 +12,18 @@ class Entity extends ash.core.Entity
     public var scale(get, set):Vector3;
     public var parent(get, set):Entity;
 
-    public function new()
+    public function new(?node:Dynamic)
     {
         super();
 
-        untyped __js__("this.node = new Module.Node(gengine.getContext());");
+        if(node == null)
+        {
+            untyped __js__("this.node = new Module.Node(gengine.getContext());");
+        }
+        else
+        {
+            untyped __js__("this.node = node;");
+        }
     }
 
     override public function add<T>(component:T, componentClass:Class<Dynamic> = null):ash.core.Entity
@@ -41,14 +48,14 @@ class Entity extends ash.core.Entity
         return component;
     }
 
-    private inline function set_position(position:Vector3):Vector3
+    private function set_position(position:Vector3):Vector3
     {
         untyped __js__("this.node.setPosition(position)");
 
         return position;
     }
 
-    private inline function get_position():Vector3
+    private function get_position():Vector3
     {
         return untyped __js__("this.node.getPosition()");
     }
@@ -65,7 +72,7 @@ class Entity extends ash.core.Entity
         return untyped __js__("this.node.getScale()");
     }
 
-    public inline function setPosition(position:Vector3):Vector3
+    public function setPosition(position:Vector3):Vector3
     {
         untyped __js__("this.node.setPosition(position)");
 
