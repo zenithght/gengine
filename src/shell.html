@@ -117,16 +117,19 @@
     <script type='text/javascript'>
 
       function setupListeners() {
-        document.getElementById("gui").addEventListener("mousedown", SDL.receiveEvent, true);
-        document.getElementById("gui").addEventListener("mousemove", SDL.receiveEvent, true);
-        document.getElementById("gui").addEventListener("mouseup", SDL.receiveEvent, true);
-        document.getElementById("gui").addEventListener("mousewheel", SDL.receiveEvent, true);
-        document.getElementById("gui").addEventListener("touchstart", SDL.receiveEvent, true);
-        document.getElementById("gui").addEventListener("touchmove", SDL.receiveEvent, true);
-        document.getElementById("gui").addEventListener("touchend", SDL.receiveEvent, true);
-        document.getElementById("gui").addEventListener("touchenter", SDL.receiveEvent, true);
-        document.getElementById("gui").addEventListener("touchleave", SDL.receiveEvent, true);
-        document.getElementById("gui").addEventListener("touchcancel", SDL.receiveEvent, true);
+        var gui = document.getElementById("gui");
+        ['touchstart', 'touchend', 'touchmove', 'mousedown', 'mouseup', 'mousemove', 'DOMMouseScroll', 'mousewheel', 'wheel', 'mouseout'].forEach(function(eventName) {
+          for(var e in JSEvents.eventHandlers)
+          {
+            var eh = JSEvents.eventHandlers[e];
+            if(eh.eventTypeString == eventName)
+            {
+              gui.addEventListener(eventName, eh.eventListenerFunc, true);
+            }
+          }
+        });
+
+        console.log("Listeners set.");
       }
 
       var spinnerElement = document.getElementById('spinner');
@@ -134,7 +137,6 @@
       var Module = {
         preRun: [
           function() {
-            setupListeners();
           }
           ],
         postRun: [],
@@ -183,9 +185,9 @@
       };
 
       function loadFile(filePath) {
-          $("#gui").load(filePath, function() {
-            gengine.execute("if gengine.gui.onPageLoaded then gengine.gui.onPageLoaded() end");
-            });
+        $("#gui").load(filePath, function() {
+          setupListeners();
+        });
       }
 
       function gengineInitialize(width, height, fullscreen)
@@ -204,6 +206,8 @@
           {
               document.getElementById('canvas_holder').style.width = "'" + width + "px'";
               document.getElementById('canvas_holder').style.height = "'" + height + "px'";
+              document.getElementById('gui').style.width = "'" + width + "px'";
+              document.getElementById('gui').style.height = "'" + height + "px'";
           }
       }
 
