@@ -68,11 +68,6 @@ solution "gengine"
 
         configuration "*Emscripten"
             defines { "EMSCRIPTEN" }
-            libdirs { "../deps/emscripten/lib" }
-            includedirs { "../deps/emscripten/include" }
-            includedirs {
-                "../deps/emscripten/include/Urho3D/ThirdParty"
-                }
             targetsuffix ".bc"
             if not os.is("windows") then
                 linkoptions { "-Wno-warn-absolute-paths" }
@@ -82,10 +77,9 @@ solution "gengine"
             defines { "CEF" }
 
             if os.is("linux") then
-                includedirs { "../deps/linux/include" }
-                includedirs { "../deps/linux/include/cef" }
                 includedirs {
-                    "../deps/linux/include/Urho3D/ThirdParty"
+                    "../deps/linux/include",
+                    "../deps/linux/include/cef"
                     }
                 links {
                     "GL",
@@ -108,6 +102,30 @@ solution "gengine"
                     "glew32"
                     }
             end
+
+        local function useUrho3D(targetPlatform, targetMode)
+            includedirs {
+                "../deps/common/Urho3D/build/" .. targetPlatform .. "/" .. targetMode .. "/include",
+                "../deps/common/Urho3D/build/" .. targetPlatform .. "/" .. targetMode .. "/include/Urho3D/ThirdParty"
+            }
+
+            libdirs {
+                "../deps/common/Urho3D/build/" .. targetPlatform .. "/" .. targetMode .. "/lib"
+            }
+        end
+
+        configuration { "Debug*", "not *Emscripten" }
+            if os.is("linux") then
+                useUrho3D("linux", "debug")
+            end
+        configuration { "Release*", "not *Emscripten" }
+            if os.is("linux") then
+                useUrho3D("linux", "release")
+            end
+        configuration { "Debug*", "*Emscripten" }
+            useUrho3D("emscripten", "debug")
+        configuration { "Release*", "*Emscripten" }
+            useUrho3D("emscripten", "release")
 
         configuration { "not *Emscripten", "x32" }
             libdirs { "../deps/linux/lib32" }

@@ -1,4 +1,4 @@
-#include "embindcefv8.h"
+#include "script.h"
 
 #include <Urho3D/Scene/Component.h>
 #include <Urho3D/Urho2D/StaticSprite2D.h>
@@ -10,6 +10,7 @@
 #include <Urho3D/Urho2D/RigidBody2D.h>
 #include <Urho3D/Urho2D/CollisionBox2D.h>
 #include <Urho3D/Urho2D/CollisionCircle2D.h>
+#include <Urho3D/Graphics/Texture2D.h>
 #include <Urho3D/Core/Context.h>
 
 using namespace Urho3D;
@@ -17,13 +18,21 @@ using namespace Urho3D;
 EMBINDCEFV8_DECLARE_STRING(String, CString);
 EMBINDCEFV8_DECLARE_CLASS(Context);
 EMBINDCEFV8_DECLARE_CLASS(Component);
+EMBINDCEFV8_DECLARE_CLASS(RigidBody2D);
 EMBINDCEFV8_DECLARE_ENUM(LoopMode2D);
 EMBINDCEFV8_DECLARE_ENUM(BlendMode);
 EMBINDCEFV8_DECLARE_ENUM(BodyType2D);
+EMBINDCEFV8_DECLARE_ENUM(TextureAddressMode);
+EMBINDCEFV8_DECLARE_ENUM(TextureCoordinate);
 
 EMBINDCEFV8_BINDINGS(urho2d)
 {
+    embindcefv8::Class<Texture2D>("Texture2D")
+        .method("setAddressMode", static_cast<void (Texture2D::*)(TextureCoordinate, TextureAddressMode)>(&Texture2D::SetAddressMode))
+        ;
+
     embindcefv8::Class<Sprite2D>("Sprite2D")
+        .method("getTexture", &Sprite2D::GetTexture)
         ;
 
     embindcefv8::Class<AnimationSet2D>("AnimationSet2D")
@@ -62,14 +71,42 @@ EMBINDCEFV8_BINDINGS(urho2d)
         .method("getBonePosition", &AnimatedSprite2D::GetBonePosition)
         ;
 
-    embindcefv8::Class<PhysicsWorld2D, Component>("PhysicsWorld2D")
-        .constructor<Context*>()
-        .method("setGravity", &PhysicsWorld2D::SetGravity)
-        ;
-
     embindcefv8::Class<RigidBody2D, Component>("RigidBody2D")
         .constructor<Context*>()
         .method("setBodyType", &RigidBody2D::SetBodyType)
+        .method("setMass", &RigidBody2D::SetMass)
+        .method("setInertia", &RigidBody2D::SetInertia)
+        .method("setMassCenter", &RigidBody2D::SetMassCenter)
+        .method("setLinearDamping", &RigidBody2D::SetLinearDamping)
+        .method("setAngularDamping", &RigidBody2D::SetAngularDamping)
+        .method("setFixedRotation", &RigidBody2D::SetFixedRotation)
+        .method("setBullet", &RigidBody2D::SetBullet)
+        .method("setGravityScale", &RigidBody2D::SetGravityScale)
+        .method("setAwake", &RigidBody2D::SetAwake)
+        .method("setLinearVelocity", &RigidBody2D::SetLinearVelocity)
+        .method("setAngularVelocity", &RigidBody2D::SetAngularVelocity)
+        .method("applyForce", &RigidBody2D::ApplyForce)
+        .method("applyForceToCenter", &RigidBody2D::ApplyForceToCenter)
+        .method("applyTorque", &RigidBody2D::ApplyTorque)
+        .method("applyLinearImpulse", &RigidBody2D::ApplyLinearImpulse)
+        .method("applyAngularImpulse", &RigidBody2D::ApplyAngularImpulse)
+        ;
+
+    embindcefv8::Class<PhysicsRaycastResult2D>("PhysicsRaycastResult2D")
+        .constructor<>()
+        .property("position", &PhysicsRaycastResult2D::position_)
+        .property("normal", &PhysicsRaycastResult2D::normal_)
+        .property("distance", &PhysicsRaycastResult2D::distance_)
+        // .property("body", &PhysicsRaycastResult2D::body_) // :todo: support for emscripten
+        ;
+
+    embindcefv8::Class<PhysicsWorld2D, Component>("PhysicsWorld2D")
+        .constructor<Context*>()
+        .method("setGravity", &PhysicsWorld2D::SetGravity)
+        .method("setContinuousPhysics", &PhysicsWorld2D::SetContinuousPhysics)
+        .method("setSubStepping", &PhysicsWorld2D::SetSubStepping)
+        .method("drawDebugGeometry", &PhysicsWorld2D::DrawDebugGeometry)
+        .method("raycastSingle", &PhysicsWorld2D::RaycastSingle)
         ;
 
     embindcefv8::Class<CollisionBox2D, Component>("CollisionBox2D")

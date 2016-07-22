@@ -1,6 +1,7 @@
 package gengine.components;
 
 import gengine.math.*;
+import gengine.physics.*;
 
 class PhysicsWorld2D extends UrhoComponent
 {
@@ -9,11 +10,30 @@ class PhysicsWorld2D extends UrhoComponent
         super();
 
         untyped __js__("this.object = new Module.PhysicsWorld2D(gengine.getContext())");
-        untyped __js__("window.dummyNode.addComponent(this.object, 0, 0);");
     }
 
     public inline function setGravity(gravity:Vector2)
     {
         this.object.setGravity(gravity);
+    }
+
+    public inline function setContinuousPhysics(continuousPhysics:Bool)
+    {
+        this.object.setContinuousPhysics(continuousPhysics);
+    }
+
+    public inline function setSubStepping(subStepping:Bool)
+    {
+        this.object.setSubStepping(subStepping);
+    }
+
+    public inline function drawDebugGeometry()
+    {
+        this.object.drawDebugGeometry();
+    }
+
+    public inline function raycastSingle(result:PhysicsRaycastResult2D, startPoint:Vector2, endPoint:Vector2, ?collisionMask = 0xffffffff)
+    {
+        this.object.raycastSingle(result, startPoint, endPoint, collisionMask);
     }
 }

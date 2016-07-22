@@ -55,3 +55,7 @@ debug.log
 *.log
 generated
 /test/packed-*
+callgrind*
+valgrind*
+vgcore*
+
