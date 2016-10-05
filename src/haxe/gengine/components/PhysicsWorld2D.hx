@@ -2,6 +2,7 @@ package gengine.components;
 
 import gengine.math.*;
 import gengine.physics.*;
+import gengine.systems.Physics2DSystem;
 
 class PhysicsWorld2D extends UrhoComponent
 {
@@ -35,5 +36,11 @@ class PhysicsWorld2D extends UrhoComponent
     public inline function raycastSingle(result:PhysicsRaycastResult2D, startPoint:Vector2, endPoint:Vector2, ?collisionMask = 0xffffffff)
     {
         this.object.raycastSingle(result, startPoint, endPoint, collisionMask);
+    }
+
+    public inline function getEntity(point:Vector2, ?collisionMask = 0xffffffff):Entity
+    {
+        var urhoBody = this.object.getRigidBody(point, collisionMask);
+        return Physics2DSystem.getEntity(urhoBody);
     }
 }

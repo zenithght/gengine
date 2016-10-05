@@ -10,6 +10,9 @@
 #include <Urho3D/Urho2D/RigidBody2D.h>
 #include <Urho3D/Urho2D/CollisionBox2D.h>
 #include <Urho3D/Urho2D/CollisionCircle2D.h>
+#include <Urho3D/Urho2D/ParticleEffect2D.h>
+#include <Urho3D/Urho2D/ParticleEmitter2D.h>
+#include <Urho3D/Math/Color.h>
 #include <Urho3D/Graphics/Texture2D.h>
 #include <Urho3D/Core/Context.h>
 
@@ -69,6 +72,8 @@ EMBINDCEFV8_BINDINGS(urho2d)
         .method("setLoopMode", &AnimatedSprite2D::SetLoopMode)
         .method("setSpeed", &AnimatedSprite2D::SetSpeed)
         .method("getBonePosition", &AnimatedSprite2D::GetBonePosition)
+        .method("setColor", static_cast<void (AnimatedSprite2D::*)(const Color &)>(&AnimatedSprite2D::SetColor))
+        .method("setAlpha", static_cast<void (AnimatedSprite2D::*)(float)>(&AnimatedSprite2D::SetAlpha))
         ;
 
     embindcefv8::Class<RigidBody2D, Component>("RigidBody2D")
@@ -90,6 +95,7 @@ EMBINDCEFV8_BINDINGS(urho2d)
         .method("applyTorque", &RigidBody2D::ApplyTorque)
         .method("applyLinearImpulse", &RigidBody2D::ApplyLinearImpulse)
         .method("applyAngularImpulse", &RigidBody2D::ApplyAngularImpulse)
+        .method("getID", static_cast<unsigned (RigidBody2D::*)() const>(&RigidBody2D::GetID))
         ;
 
     embindcefv8::Class<PhysicsRaycastResult2D>("PhysicsRaycastResult2D")
@@ -107,6 +113,7 @@ EMBINDCEFV8_BINDINGS(urho2d)
         .method("setSubStepping", &PhysicsWorld2D::SetSubStepping)
         .method("drawDebugGeometry", &PhysicsWorld2D::DrawDebugGeometry)
         .method("raycastSingle", &PhysicsWorld2D::RaycastSingle)
+        .method("getRigidBody", static_cast<RigidBody2D* (PhysicsWorld2D::*)(const Vector2&, unsigned)>(&PhysicsWorld2D::GetRigidBody))
         ;
 
     embindcefv8::Class<CollisionBox2D, Component>("CollisionBox2D")
@@ -126,5 +133,20 @@ EMBINDCEFV8_BINDINGS(urho2d)
         .method("setDensity", static_cast<void (CollisionCircle2D::*)(float)>(&CollisionCircle2D::SetDensity))
         .method("setFriction", static_cast<void (CollisionCircle2D::*)(float)>(&CollisionCircle2D::SetFriction))
         .method("setRestitution", static_cast<void (CollisionCircle2D::*)(float)>(&CollisionCircle2D::SetRestitution))
+        ;
+
+    embindcefv8::Class<ParticleEffect2D>("ParticleEffect2D")
+        ;
+
+    embindcefv8::Class<ParticleEmitter2D, Component>("ParticleEmitter2D")
+        .constructor<Context*>()
+        .method("setEffect", &ParticleEmitter2D::SetEffect)
+        .method("setSprite", &ParticleEmitter2D::SetSprite)
+        .method("setBlendMode", &ParticleEmitter2D::SetBlendMode)
+        .method("setMaxParticles", &ParticleEmitter2D::SetMaxParticles)
+        .method("setLayer", static_cast<void (ParticleEmitter2D::*)(int)>(&ParticleEmitter2D::SetLayer))
+        .method("setOrderInLayer", static_cast<void (ParticleEmitter2D::*)(int)>(&ParticleEmitter2D::SetOrderInLayer))
+        .method("getLayer", static_cast<int (ParticleEmitter2D::*)() const>(&ParticleEmitter2D::GetLayer))
+        .method("getOrderInLayer", static_cast<int (ParticleEmitter2D::*)() const>(&ParticleEmitter2D::GetOrderInLayer))
         ;
 }

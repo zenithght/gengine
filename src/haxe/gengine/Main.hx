@@ -1,6 +1,7 @@
 package gengine;
 
 import gengine.systems.*;
+import gengine.components.RigidBody2D;
 import gengine.*;
 
 @:dox(hide)
@@ -28,6 +29,7 @@ class Main
         untyped __js__("window.dummyNode = gengine.getScene().createChild(0, 0);");
         untyped __js__("window.dummyNode.setEnabled(false)");
 
+        engine.addSystem(new Physics2DSystem(), 1);
         Application.start(engine);
     }
 
@@ -41,6 +43,12 @@ class Main
         var scene = Gengine.getScene();
 
         untyped __js__("scene.addChild(entity.node, 1000)");
+
+        var r = entity.get(RigidBody2D);
+        if(r != null)
+        {
+            Physics2DSystem.addEntity(r.object, cast entity);
+        }
     }
 
     static public function onEntityRemoved(entity:ash.core.Entity):Void
@@ -48,5 +56,12 @@ class Main
         var scene = Gengine.getScene();
 
         untyped __js__("scene.removeChild(entity.node)");
+    }
+
+    static public function onGuiLoaded():Void
+    {
+        var app = Application;
+
+        untyped __js__('if(typeof app.onGuiLoaded === "function") { app.onGuiLoaded(); }');
     }
 }
